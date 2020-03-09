@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System;
+using System.Collections.Generic;
 
 namespace SimpleDynamicWebAPI
 {
@@ -39,14 +40,28 @@ namespace SimpleDynamicWebAPI
             }
         }
 
+        private void ConfigureSelector(ControllerModel controller)
+        {
+            throw new NotImplementedException();
+        }
+
         private void ConfigureParameters(ControllerModel controller)
         {
             throw new NotImplementedException();
         }
 
-        private void ConfigureSelector(ControllerModel controller)
+        private void RemoveEmptySelectors(IList<SelectorModel> selectors)
         {
-            throw new NotImplementedException();
+            for (var i = selectors.Count - 1; i >= 0; i--)
+            {
+                var selector = selectors[i];
+                if (selector.AttributeRouteModel == null &&
+                    (selector.ActionConstraints == null || selector.ActionConstraints.Count <= 0) &&
+                    (selector.EndpointMetadata == null || selector.EndpointMetadata.Count <= 0))
+                {
+                    selectors.Remove(selector);
+                }
+            }
         }
     }
 }

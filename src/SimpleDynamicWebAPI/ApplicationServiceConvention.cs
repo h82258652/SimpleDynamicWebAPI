@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleDynamicWebAPI
 {
@@ -41,6 +42,21 @@ namespace SimpleDynamicWebAPI
         }
 
         private void ConfigureSelector(ControllerModel controller)
+        {
+            RemoveEmptySelectors(controller.Selectors);
+
+            if (controller.Selectors.Any(temp => temp.AttributeRouteModel != null))
+            {
+                return;
+            }
+
+            foreach (var action in controller.Actions)
+            {
+                ConfigureSelector(action);
+            }
+        }
+
+        private void ConfigureSelector(ActionModel action)
         {
             throw new NotImplementedException();
         }

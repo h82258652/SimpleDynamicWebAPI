@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace SimpleDynamicWebAPI
 {
@@ -75,7 +76,32 @@ namespace SimpleDynamicWebAPI
 
         private void ConfigureParameters(ControllerModel controller)
         {
-            throw new NotImplementedException();
+            foreach (var action in controller.Actions)
+            {
+                foreach (var parameter in action.Parameters)
+                {
+                    if (parameter.BindingInfo != null)
+                    {
+                        continue;
+                    }
+
+                    if (parameter.ParameterType.IsClass &&
+                        parameter.ParameterType != typeof(string) &&
+                        parameter.ParameterType != typeof(IFormFile))
+                    {
+                        var httpMethods = action.Selectors.SelectMany(temp => temp.ActionConstraints).OfType<HttpMethodActionConstraint>().SelectMany(temp => temp.HttpMethods).ToList();
+                        if (httpMethods.Contains("GET") ||
+                            httpMethods.Contains("DELETE") ||
+                            httpMethods.Contains("TRACE") ||
+                            httpMethods.Contains("HEAD"))
+                        {
+                            continue;
+                        }
+
+                        parameter.BindingInfo = BindingInfo.GetBindingInfo(new[] { new FromBodyAttribute() });
+                    }
+                }
+            }
         }
 
         private void NormalizeSelectorRoutes(ActionModel action)

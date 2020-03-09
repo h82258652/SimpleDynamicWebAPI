@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDynamicWebAPI", "src\SimpleDynamicWebAPI\SimpleDynamicWebAPI.csproj", "{083D610A-B07F-472B-B2E9-057DD46963E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "demo\Demo\Demo.csproj", "{2679EE6C-DC62-4B04-AE9F-6F4FCB39E92E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{083D610A-B07F-472B-B2E9-057DD46963E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083D610A-B07F-472B-B2E9-057DD46963E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083D610A-B07F-472B-B2E9-057DD46963E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083D610A-B07F-472B-B2E9-057DD46963E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2679EE6C-DC62-4B04-AE9F-6F4FCB39E92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2679EE6C-DC62-4B04-AE9F-6F4FCB39E92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2679EE6C-DC62-4B04-AE9F-6F4FCB39E92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2679EE6C-DC62-4B04-AE9F-6F4FCB39E92E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8626A517-6C3F-4C55-BD7A-E5180024DB6D}
+	EndGlobalSection
+EndGlobal

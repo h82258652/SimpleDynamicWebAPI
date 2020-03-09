@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace SimpleDynamicWebAPI
@@ -16,6 +17,12 @@ namespace SimpleDynamicWebAPI
             {
                 applicationPartManager.FeatureProviders.Add(new ApplicationServiceControllerFeatureProvider());
             });
+
+            builder.Services.Configure<MvcOptions>(options =>
+            {
+                options.Conventions.Add(new ApplicationServiceConvention());
+            });
+
             return builder;
         }
 
@@ -30,6 +37,12 @@ namespace SimpleDynamicWebAPI
             {
                 applicationPartManager.FeatureProviders.Add(new ApplicationServiceControllerFeatureProvider());
             });
+
+            builder.Services.Configure<MvcOptions>(options =>
+            {
+                options.Conventions.Add(new ApplicationServiceConvention());
+            });
+
             return builder;
         }
     }

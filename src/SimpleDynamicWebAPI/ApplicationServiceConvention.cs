@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace SimpleDynamicWebAPI
 {
@@ -58,12 +61,126 @@ namespace SimpleDynamicWebAPI
 
         private void ConfigureSelector(ActionModel action)
         {
-            throw new NotImplementedException();
+            RemoveEmptySelectors(action.Selectors);
+
+            if (action.Selectors.Count <= 0)
+            {
+                AddApplicationServiceSelector(action);
+            }
+            else
+            {
+                NormalizeSelectorRoutes(action);
+            }
         }
 
         private void ConfigureParameters(ControllerModel controller)
         {
             throw new NotImplementedException();
+        }
+
+        private void NormalizeSelectorRoutes(ActionModel action)
+        {
+            foreach (var selector in action.Selectors)
+            {
+                if (selector.AttributeRouteModel == null)
+                {
+                    selector.AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(CalculateRouteTemplate(action)));
+                }
+
+                if (selector.ActionConstraints.OfType<HttpMethodActionConstraint>().FirstOrDefault()?.HttpMethods?.FirstOrDefault() == null)
+                {
+                    selector.ActionConstraints.Add(new HttpMethodActionConstraint(new[] { GetHttpMethod(action) }));
+                }
+            }
+        }
+
+        private void AddApplicationServiceSelector(ActionModel action)
+        {
+            var selector = new SelectorModel();
+            selector.AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(CalculateRouteTemplate(action)));
+            selector.ActionConstraints.Add(new HttpMethodActionConstraint(new[] { GetHttpMethod(action) }));
+
+            action.Selectors.Add(selector);
+        }
+
+        private string CalculateRouteTemplate(ActionModel action)
+        {
+            var routeTemplate = new StringBuilder();
+            routeTemplate.Append("api");
+
+            // 控制器名称部分
+            var controllerName = action.Controller.ControllerName;
+            if (controllerName.EndsWith("ApplicationService"))
+            {
+                controllerName = controllerName.Substring(0, controllerName.Length - "ApplicationService".Length);
+            }
+            else if (controllerName.EndsWith("AppService"))
+            {
+                controllerName = controllerName.Substring(0, controllerName.Length - "AppService".Length);
+            }
+            controllerName += "s";
+            routeTemplate.Append($"/{controllerName}");
+
+            // id 部分
+            if (action.Parameters.Any(temp => temp.ParameterName == "id"))
+            {
+                routeTemplate.Append("/{id}");
+            }
+
+            // Action 名称部分
+            var actionName = action.ActionName;
+            if (actionName.EndsWith("Async"))
+            {
+                actionName = actionName.Substring(0, actionName.Length - "Async".Length);
+            }
+            var trimPrefixes = new[]
+            {
+                "GetAll","GetList","Get",
+                "Post","Create","Add","Insert",
+                "Put","Update",
+                "Delete","Remove",
+                "Patch"
+            };
+            foreach (var trimPrefix in trimPrefixes)
+            {
+                if (actionName.StartsWith(trimPrefix))
+                {
+                    actionName = actionName.Substring(trimPrefix.Length);
+                    break;
+                }
+            }
+            if (!string.IsNullOrEmpty(actionName))
+            {
+                routeTemplate.Append($"/{actionName}");
+            }
+
+            return routeTemplate.ToString();
+        }
+
+        private string GetHttpMethod(ActionModel action)
+        {
+            var actionName = action.ActionName;
+            if (actionName.StartsWith("Get"))
+            {
+                return "GET";
+            }
+
+            if (actionName.StartsWith("Put") || actionName.StartsWith("Update"))
+            {
+                return "PUT";
+            }
+
+            if (actionName.StartsWith("Delete") || actionName.StartsWith("Remove"))
+            {
+                return "DELETE";
+            }
+
+            if (actionName.StartsWith("Patch"))
+            {
+                return "PATCH";
+            }
+
+            return "POST";
         }
 
         private void RemoveEmptySelectors(IList<SelectorModel> selectors)
